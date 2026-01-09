@@ -5,6 +5,7 @@
 :root {
   --background: #000000;
   --foreground: #00ff00;
+  --grid-color: #003300; /* لون الشبكة */
 }
 
 body {
@@ -19,4 +20,19 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   background: #004400;
+}
+
+/* التنسيق الخاص بشبكة الخلفية */
+.bg-grid-green-900 {
+  background-image: linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                    linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.05; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s infinite ease-in-out;
 }
