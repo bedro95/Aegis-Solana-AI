@@ -21,12 +21,18 @@ export default function AegisDashboard() {
 
   const handleCommand = async () => {
     if (!input) return;
+    
+    // إظهار أمر المستخدم
     setLogs(prev => [...prev, `> USER: ${input.toUpperCase()}`]);
-    const response = await engine.interpretIntent(input);
-    setLogs(prev => [...prev, `[AEGIS]: Executing ${response.agentDecision}...`, `[STATUS]: Confidence ${response.confidence * 100}%`]);
+    
+    // تشغيل "المخ" فعلياً
+    const result = await engine.executeAICommand(input);
+    
+    // إظهار رد "المخ" الحقيقي
+    setLogs(prev => [...prev, `[AEGIS]: ${result.message}`]);
+    
     setInput("");
   };
-
   return (
     <main className="min-h-screen bg-[#050505] text-[#00ff41] p-6 font-mono selection:bg-[#00ff41] selection:text-black">
       <div className="max-w-6xl mx-auto space-y-6">
