@@ -27,4 +27,4 @@ In a world where Web3 moves at the speed of light, Aegis acts as your "Technical
 Aegis is built with a "Sophisticated Growth" mindset. We welcome high-level developers and Web3 enthusiasts to contribute to the future of autonomous finance.
 
 ---
-*Built with passion by a high-ambition Web3 Developer.*
+*Built with passion by bedro95
