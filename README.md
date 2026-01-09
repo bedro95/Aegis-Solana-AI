@@ -19,7 +19,7 @@ In a world where Web3 moves at the speed of light, Aegis acts as your "Technical
 - [ ] **State Compression NFTs:** Low-cost loyalty badges for Aegis users.
 
 ## 🛠️ Getting Started
-1. **Clone the repo:** `git clone https://github.com/YOUR_USERNAME/Aegis-Solana-AI.git`
+1. **Clone the repo:** `git clone https://github.com/bedro95/Aegis-Solana-AI.git`
 2. **Install dependencies:** `npm install`
 3. **Run locally:** `npm run dev`
 
