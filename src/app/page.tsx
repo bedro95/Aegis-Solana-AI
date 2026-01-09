@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { Github } from 'lucide-react'; // استيراد أيقونة GitHub
 
 // محرك AI مبسط لتجنب أخطاء الاستيراد حالياً
 const analyzeToken = (address: string) => {
@@ -17,6 +18,14 @@ export default function AegisDashboard() {
   const [input, setInput] = useState("");
   const [logs, setLogs] = useState<string[]>(["[SYSTEM] Aegis AI Initialized...", "[READY] Waiting for wallet connection..."]);
   const { connected } = useWallet();
+  const [lastUpdatedDate, setLastUpdatedDate] = useState("");
+
+  useEffect(() => {
+    // حساب تاريخ الأمس
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    setLastUpdatedDate(yesterday.getFullYear().toString()); // عرض السنة فقط
+  }, []);
 
   const handleAnalyze = () => {
     if (!input) return;
@@ -39,12 +48,25 @@ export default function AegisDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-green-500 p-4 md:p-8 font-mono">
+    <div className="min-h-screen bg-black text-green-500 p-4 md:p-8 font-mono relative overflow-hidden">
+      {/* Visual Effect: Background Grid */}
+      <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+        <div className="w-full h-full bg-grid-green-900 bg-[size:30px_30px] animate-pulse-slow"></div>
+      </div>
+
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-center border-b border-green-900 pb-4 mb-8 gap-4">
-        <div>
+      <div className="relative z-10 flex flex-col md:flex-row justify-between items-center border-b border-green-900 pb-4 mb-8 gap-4">
+        <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold tracking-tighter">AEGIS-SOLANA-AI v1.0</h1>
-          <p className="text-xs opacity-50 text-right md:text-left">NEURAL NETWORK SECURED</p>
+          <a 
+            href="https://github.com/bedro95" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-green-400 hover:text-green-200 transition-colors"
+            title="Go to bedro95 GitHub"
+          >
+            <Github size={24} />
+          </a>
         </div>
         <div className="flex items-center gap-4">
           <span className={`text-[10px] ${connected ? 'text-green-400' : 'text-red-500'}`}>
@@ -54,7 +76,7 @@ export default function AegisDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Terminal Section */}
         <div className="bg-zinc-950 border border-green-800 p-4 rounded shadow-[0_0_20px_rgba(0,50,0,0.5)] h-[400px] overflow-y-auto flex flex-col-reverse">
           <div className="flex flex-col">
@@ -109,8 +131,8 @@ export default function AegisDashboard() {
       </div>
       
       {/* Footer */}
-      <div className="mt-8 pt-4 border-t border-green-900 text-[10px] opacity-30 flex justify-between uppercase tracking-widest">
-        <span>Aegis Systems Corp © 2024</span>
+      <div className="relative z-10 mt-8 pt-4 border-t border-green-900 text-[10px] opacity-30 flex justify-between uppercase tracking-widest">
+        <span>Aegis Systems Corp © {lastUpdatedDate}</span>
         <span>Secure Terminal Encryption: AES-256</span>
       </div>
     </div>
