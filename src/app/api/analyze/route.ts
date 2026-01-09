@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // تأكد من وجود المفتاح في ملف .env
-});
+// استدعاء المفتاح من ملف .env
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: Request) {
   try {
     const { bundleCount, tokenName } = await req.json();
 
-    const systemPrompt = `
+    // إعداد نموذج Gemini
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const prompt = `
       You are "Aegis Rogue Radar", a savage security AI expert on Solana. 
-      Your tone is sarcastic, witty, and elite English.
+      Your tone is sarcastic, witty, and elite British English.
       Analyze the following data for a token on Pump.fun:
       - Token Name: ${tokenName}
       - Bundled Wallets detected: ${bundleCount}
@@ -20,19 +22,17 @@ export async function POST(req: Request) {
       1. If bundleCount > 8: Label the dev "The Puppet Master 🎭" and roast him for trying to control the whole supply.
       2. If bundleCount 4-7: Label him "A Greedy Jeeter 🤡" and warn people he might dump soon.
       3. If bundleCount < 3: Label him "Potential Chad 🗿" but stay skeptical.
-      Keep the response under 60 words. Speak to the user as "Anon".
+      
+      Keep the response short (under 50 words) and very viral. Start with "Listen up, Anon...".
     `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o", // أو gpt-3.5-turbo
-      messages: [{ role: "system", content: systemPrompt }],
-      temperature: 0.8,
-    });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
-    return NextResponse.json({ 
-      aiResponse: response.choices[0].message.content 
-    });
+    return NextResponse.json({ aiResponse: text });
   } catch (error) {
-    return NextResponse.json({ error: "AI Refused to cooperate." }, { status: 500 });
+    console.error(error);
+    return NextResponse.json({ error: "Gemini is sleeping right now." }, { status: 500 });
   }
 }
