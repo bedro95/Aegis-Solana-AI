@@ -1,36 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🛡️ Aegis: AI-Driven Solana Commander
 
-## Getting Started
+**Aegis** is a next-generation Autonomous Agent built on the Solana blockchain. It bridges the gap between complex On-Chain operations and Natural Language processing, allowing users to execute sophisticated financial strategies through a simple, intelligent interface.
 
-First, run the development server:
+## 🚀 Vision
+In a world where Web3 moves at the speed of light, Aegis acts as your "Technical Sentinel." Leveraging Solana's high-speed infrastructure and advanced AI reasoning, Aegis can analyze market liquidity, sentiment, and execute trades or protection protocols in milliseconds.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Tech Stack
+- **Framework:** Next.js 15+ (App Router)
+- **Blockchain:** Solana Web3.js
+- **Styling:** Tailwind CSS (Cyberpunk Terminal Aesthetic)
+- **Intelligence:** Aegis-Logic Engine (Custom AI Intent Interpreter)
+- **Deployment:** Vercel (Production Grade)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Key Features (Roadmap)
+- [x] **Core Intent Engine:** Translating human language to blockchain parameters.
+- [ ] **Jupiter Aggregator Integration:** Real-time swap execution with best prices.
+- [ ] **Autonomous Liquidity Guard:** Automated stop-loss and protection via AI.
+- [ ] **State Compression NFTs:** Low-cost loyalty badges for Aegis users.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Getting Started
+1. **Clone the repo:** `git clone https://github.com/YOUR_USERNAME/Aegis-Solana-AI.git`
+2. **Install dependencies:** `npm install`
+3. **Run locally:** `npm run dev`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🤝 Contribution
+Aegis is built with a "Sophisticated Growth" mindset. We welcome high-level developers and Web3 enthusiasts to contribute to the future of autonomous finance.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with passion by a high-ambition Web3 Developer.*
