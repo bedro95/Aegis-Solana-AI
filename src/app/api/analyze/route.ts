@@ -1,29 +1,34 @@
-import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { NextResponse } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: Request) {
   try {
-    const { bundleCount, tokenName } = await req.json();
+    const { tokenName, bundleCount, ca } = await req.json();
+
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `
-      You are "Aegis Rogue Radar", a savage security AI expert on Solana. 
-      Analyze this Pump.fun token:
-      - Name: ${tokenName}
-      - Bundled Wallets: ${bundleCount}
-
-      If bundleCount > 8, call it "The Puppet Master 🎭".
-      If 4-7, call it "Greedy Jeeter 🤡".
-      If < 3, call it "Potential Chad 🗿".
+      You are AEGIS AI, a brutal and elite Solana blockchain security analyst. 
+      Analyze this token: ${tokenName} with Mint Address (CA): ${ca}.
+      Information found: The developer has bundled ${bundleCount} wallets.
       
-      Roast the dev in sarcastic British English (under 50 words). Start with "Listen up, Anon...".
+      Your Task:
+      1. Give a high-speed technical roast of the developer for bundling.
+      2. Rate the rug-pull risk from 1% to 100%.
+      3. Use a futuristic, aggressive, and "hacker" tone.
+      4. Keep it short (max 3 sentences) and extremely professional yet toxic.
+      
+      Style: "CRITICAL BREACH DETECTED: [Your Analysis]"
     `;
 
     const result = await model.generateContent(prompt);
-    return NextResponse.json({ aiResponse: result.response.text() });
+    const response = await result.response;
+    const text = response.text();
+
+    return NextResponse.json({ aiResponse: text });
   } catch (error) {
-    return NextResponse.json({ aiResponse: "Gemini is busy, but those bundles look suspicious anyway!" }, { status: 200 });
+    return NextResponse.json({ aiResponse: "AI CORE OFFLINE: Access Denied." }, { status: 500 });
   }
 }
