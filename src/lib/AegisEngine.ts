@@ -1,40 +1,45 @@
 // path: src/lib/AegisEngine.ts
+import { Connection } from '@solana/web3.js';
 
-import { Connection, PublicKey } from '@solana/web3.js';
-
-/**
- * AegisEngine: The core logic that bridges AI reasoning with Solana execution.
- */
 export class AegisEngine {
     private connection: Connection;
-    // We use the official Solana mainnet endpoint
-    private clusterUrl: string = 'https://api.mainnet-beta.solana.com';
 
     constructor() {
-        this.connection = new Connection(this.clusterUrl, 'confirmed');
+        // Using a public RPC for basic data
+        this.connection = new Connection("https://api.mainnet-beta.solana.com");
     }
 
-    /**
-     * Translates natural language into actionable on-chain logic.
-     */
+    // New Function to fetch real SOL price from CoinGecko
+    async getLivePrice() {
+        try {
+            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+            const data = await response.json();
+            return data.solana.usd;
+        } catch (error) {
+            return "---";
+        }
+    }
+
     async interpretIntent(userPrompt: string) {
-        console.log("Aegis Brain processing input:", userPrompt);
+        const prompt = userPrompt.toLowerCase();
         
-        // This simulates the AI reasoning layer
-        return {
-            status: "Success",
-            action: "AUTO_TRADE",
-            payload: {
-                token: "SOL",
-                strategy: "Aggressive Liquidity Hunting",
-                riskLevel: "Low"
-            },
-            aiConfidence: "99.2%"
-        };
-    }
+        // Smarter Logic instead of undefined
+        let decision = "GENERAL_QUERY";
+        let confidence = 0.85;
 
-    async executeOnChain() {
-        // This will be linked to Jupiter API in the next hour
-        return "Aegis is communicating with Solana cluster...";
+        if (prompt.includes("price") || prompt.includes("analyze")) {
+            decision = "MARKET_ANALYSIS";
+            confidence = 0.98;
+        } else if (prompt.includes("buy") || prompt.includes("swap")) {
+            decision = "TRADE_EXECUTION";
+            confidence = 0.95;
+        }
+
+        return {
+            status: "success",
+            agentDecision: decision,
+            confidence: confidence,
+            network: "Solana Mainnet"
+        };
     }
 }
