@@ -1,78 +1,367 @@
 "use client";
-import { useState } from 'react';
-import { Shield, Zap, Terminal, Github, Activity } from 'lucide-react';
+import { useEffect, useState } from "react";
+import {
+  Shield,
+  Zap,
+  Terminal,
+  Github,
+  Activity,
+  Wallet,
+  AlertTriangle,
+  Lock,
+} from "lucide-react";
 
-export default function AegisFinal() {
-  const [address, setAddress] = useState('');
+declare global {
+  interface Window {
+    solana?: any;
+  }
+}
+
+export default function AegisUltimate() {
+  const [address, setAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [wallet, setWallet] = useState<string | null>(null);
+  const [walletAvailable, setWalletAvailable] = useState(false);
 
-  const runScan = async () => {
-    if (!address) return;
-    setLoading(true);
-    await new Promise(r => setTimeout(r, 2000));
+  /* =========================
+     AEGIS SMART DETECTION
+  ========================== */
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.solana?.isPhantom) {
+      setWalletAvailable(true);
+    }
+  }, []);
+
+  const connectWallet = async () => {
     try {
-      const res = await fetch('/api/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tokenName: "SOL_ROGUE", bundleCount: 5 }),
+      const res = await window.solana.connect();
+      setWallet(res.publicKey.toString());
+    } catch {
+      /* silent fail by design */
+    }
+  };
+
+  /* =========================
+     CORE SCAN
+  ========================== */
+  const runScan = async () => {
+    if (!address || !wallet) return;
+    setLoading(true);
+    setResult(null);
+
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address,
+          wallet,
+        }),
       });
+
       const data = await res.json();
-      setResult(data.aiResponse);
-    } catch (e) { setResult("SYSTEM ERROR."); }
+      setResult(
+        typeof data.aiResponse === "string"
+          ? data.aiResponse
+          : "UNIDENTIFIED THREAT VECTOR"
+      );
+    } catch {
+      setResult("SCAN INTERRUPTED — SIGNAL LOST");
+    }
+
     setLoading(false);
   };
 
   return (
-    <div style={{ backgroundColor: '#020202', color: 'white', minHeight: '100vh', fontFamily: 'sans-serif', padding: '40px 20px', position: 'relative', overflow: 'hidden' }}>
-      {/* Glow Effect - Fixed zIndex */}
-      <div style={{ position: 'absolute', top: '-100px', left: '50%', transform: 'translateX(-50%)', width: '600px', height: '400px', background: 'rgba(6, 182, 212, 0.15)', filter: 'blur(100px)', borderRadius: '50%', zIndex: 0 }}></div>
+    <div
+      style={{
+        backgroundColor: "#020202",
+        color: "white",
+        minHeight: "100vh",
+        fontFamily: "Inter, system-ui, sans-serif",
+        padding: "40px 20px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* CORE GLOW */}
+      <div
+        style={{
+          position: "absolute",
+          top: "-120px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "700px",
+          height: "450px",
+          background: "rgba(6,182,212,0.18)",
+          filter: "blur(130px)",
+          borderRadius: "50%",
+          zIndex: 0,
+        }}
+      />
 
-      <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '1200px', margin: '0 auto 80px', position: 'relative', zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <Shield size={32} color="#22d3ee" />
-          <div style={{ fontWeight: '900', fontSize: '24px', letterSpacing: '-1px' }}>AEGIS <span style={{ color: '#22d3ee' }}>ROGUE</span></div>
+      {/* NAV */}
+      <nav
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          maxWidth: "1200px",
+          margin: "0 auto 90px",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          <Shield size={34} color="#22d3ee" />
+          <div style={{ fontWeight: 900, fontSize: "24px" }}>
+            AEGIS <span style={{ color: "#22d3ee" }}>ROGUE</span>
+          </div>
         </div>
-        <a href="https://github.com/bedro95" target="_blank" rel="noopener noreferrer" style={{ color: 'white', textDecoration: 'none', fontSize: '12px', border: '1px solid rgba(255,255,255,0.1)', padding: '8px 16px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)' }}>
-          <Github size={16} /> Dev: Bedro95
-        </a>
+
+        <div style={{ display: "flex", gap: "12px" }}>
+          {!wallet ? (
+            <button
+              onClick={connectWallet}
+              disabled={!walletAvailable}
+              style={{
+                padding: "8px 16px",
+                borderRadius: "20px",
+                fontSize: "12px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                border: "1px solid rgba(255,255,255,0.15)",
+                background: walletAvailable
+                  ? "rgba(34,211,238,0.1)"
+                  : "rgba(255,255,255,0.05)",
+                color: walletAvailable ? "#22d3ee" : "#666",
+                cursor: walletAvailable ? "pointer" : "not-allowed",
+              }}
+            >
+              <Wallet size={14} />
+              {walletAvailable ? "CONNECT WALLET" : "NO WALLET"}
+            </button>
+          ) : (
+            <div
+              style={{
+                padding: "8px 16px",
+                borderRadius: "20px",
+                fontSize: "11px",
+                border: "1px solid rgba(34,211,238,0.3)",
+                color: "#22d3ee",
+              }}
+            >
+              {wallet.slice(0, 4)}…{wallet.slice(-4)}
+            </div>
+          )}
+
+          <a
+            href="https://github.com/bedro95"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              color: "white",
+              textDecoration: "none",
+              fontSize: "12px",
+              border: "1px solid rgba(255,255,255,0.1)",
+              padding: "8px 16px",
+              borderRadius: "20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              background: "rgba(255,255,255,0.05)",
+            }}
+          >
+            <Github size={14} /> BEDRO95
+          </a>
+        </div>
       </nav>
 
-      <main style={{ maxWidth: '800px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 10 }}>
-        <h1 style={{ fontSize: '72px', fontWeight: '900', margin: '0 0 20px', fontStyle: 'italic', letterSpacing: '-4px', lineHeight: '0.9' }}>GOD EYE</h1>
-        <p style={{ color: '#666', fontSize: '18px', marginBottom: '60px', letterSpacing: '2px', fontWeight: 'bold' }}>ADVANCED AI BLOCKCHAIN INTELLIGENCE</p>
+      {/* MAIN */}
+      <main
+        style={{
+          maxWidth: "820px",
+          margin: "0 auto",
+          textAlign: "center",
+          position: "relative",
+          zIndex: 10,
+        }}
+      >
+        <h1
+          style={{
+            fontSize: "76px",
+            fontWeight: 900,
+            fontStyle: "italic",
+            letterSpacing: "-5px",
+            lineHeight: "0.9",
+            marginBottom: "18px",
+          }}
+        >
+          AEGIS TOOL
+        </h1>
 
-        <div style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '24px', padding: '40px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
-          <div style={{ position: 'relative', marginBottom: '30px' }}>
-            <Terminal style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', opacity: 0.3 }} size={20} />
-            <input 
-              style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '2px solid #222', padding: '15px 15px 15px 50px', fontSize: '18px', color: '#22d3ee', outline: 'none', boxSizing: 'border-box' }}
-              placeholder="ENTER MINT ADDRESS..."
+        <p
+          style={{
+            color: "#666",
+            fontSize: "14px",
+            marginBottom: "70px",
+            letterSpacing: "4px",
+            fontWeight: 700,
+          }}
+        >
+          AI BLOCKCHAIN THREAT INTELLIGENCE
+        </p>
+
+        {/* PANEL */}
+        <div
+          style={{
+            background: "#0a0a0a",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "28px",
+            padding: "44px",
+            boxShadow: "0 25px 70px rgba(0,0,0,0.6)",
+          }}
+        >
+          {!wallet && (
+            <div
+              style={{
+                padding: "20px",
+                border: "1px dashed rgba(255,255,255,0.15)",
+                borderRadius: "16px",
+                color: "#777",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "10px",
+                marginBottom: "30px",
+              }}
+            >
+              <Lock size={18} /> SYSTEM LOCKED — CONNECT WALLET
+            </div>
+          )}
+
+          {/* INPUT */}
+          <div style={{ position: "relative", marginBottom: "30px" }}>
+            <Terminal
+              size={20}
+              style={{
+                position: "absolute",
+                left: "16px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                opacity: 0.35,
+              }}
+            />
+            <input
+              disabled={!wallet}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
+              placeholder="ENTER CONTRACT ADDRESS"
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                borderBottom: "2px solid #222",
+                padding: "16px 16px 16px 52px",
+                fontSize: "18px",
+                color: "#22d3ee",
+                outline: "none",
+                opacity: wallet ? 1 : 0.4,
+              }}
             />
           </div>
 
-          <button 
+          {/* BUTTON */}
+          <button
             onClick={runScan}
-            disabled={loading || !address}
-            style={{ width: '100%', padding: '20px', borderRadius: '12px', border: 'none', background: loading ? '#222' : 'white', color: 'black', fontWeight: '900', cursor: 'pointer', letterSpacing: '2px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', transition: '0.3s' }}
+            disabled={!wallet || !address || loading}
+            style={{
+              width: "100%",
+              padding: "22px",
+              borderRadius: "14px",
+              border: "none",
+              background: loading
+                ? "#222"
+                : wallet
+                ? "white"
+                : "#111",
+              color: wallet ? "black" : "#555",
+              fontWeight: 900,
+              letterSpacing: "3px",
+              cursor:
+                wallet && address && !loading ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "12px",
+              transition: "0.3s",
+            }}
           >
-            {loading ? <Activity className="animate-spin" size={20} /> : <Zap size={20} />}
-            {loading ? "SCANNING..." : "EXECUTE DEEP SCAN"}
+            {loading ? (
+              <Activity className="animate-spin" size={20} />
+            ) : (
+              <Zap size={20} />
+            )}
+            {loading ? "ANALYZING…" : "EXECUTE DEEP SCAN"}
           </button>
 
+          {/* RESULT */}
           {result && (
-            <div style={{ marginTop: '40px', padding: '25px', background: 'rgba(220, 38, 38, 0.05)', borderLeft: '4px solid #dc2626', textAlign: 'left', fontStyle: 'italic' }}>
-              <div style={{ color: '#dc2626', fontWeight: 'bold', fontSize: '11px', marginBottom: '10px', letterSpacing: '2px' }}>CRITICAL INTEL FOUND:</div>
-              <div style={{ fontSize: '18px', lineHeight: '1.6', color: '#eee' }}>"{result}"</div>
+            <div
+              style={{
+                marginTop: "44px",
+                padding: "28px",
+                background: "rgba(220,38,38,0.06)",
+                borderLeft: "4px solid #dc2626",
+                textAlign: "left",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  color: "#dc2626",
+                  fontWeight: 800,
+                  fontSize: "11px",
+                  letterSpacing: "3px",
+                  marginBottom: "14px",
+                }}
+              >
+                <AlertTriangle size={14} />
+                CRITICAL INTEL
+              </div>
+              <div
+                style={{
+                  fontSize: "18px",
+                  lineHeight: "1.7",
+                  color: "#eee",
+                  fontStyle: "italic",
+                }}
+              >
+                “{result}”
+              </div>
             </div>
           )}
         </div>
       </main>
 
-      <footer style={{ position: 'fixed', bottom: '20px', width: '100%', textAlign: 'center', opacity: 0.2, fontSize: '10px', letterSpacing: '4px', left: 0 }}>
-        AEGIS PROTOCOL ACTIVE // 2026
+      {/* FOOTER */}
+      <footer
+        style={{
+          position: "fixed",
+          bottom: "20px",
+          width: "100%",
+          textAlign: "center",
+          opacity: 0.25,
+          fontSize: "10px",
+          letterSpacing: "6px",
+          left: 0,
+        }}
+      >
+        AEGIS PROTOCOL //  2026
       </footer>
     </div>
   );
